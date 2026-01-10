@@ -1,0 +1,33 @@
+name: Build Windows EXE
+
+on:
+  push:
+    branches: [ "master", "main" ]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 14 # 兼容 Vue 2 项目
+
+      - name: Install Dependencies
+        # 使用 --legacy-peer-deps 防止老版本插件冲突
+        run: npm install --legacy-peer-deps
+
+      - name: Build Web Project
+        run: npm run build
+
+      - name: Build EXE (Electron Builder)
+        # 这里使用第三方 action，它会自动创建一个 Electron 环境来包裹你的 dist 文件夹
+        uses: samuelmeuli/action-electron-builder@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # 告诉打包器，网页文件在 dist 文件夹里
+          args: "--config.directories.output=release"
