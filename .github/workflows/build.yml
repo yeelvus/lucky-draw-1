@@ -1,35 +1,32 @@
-name: Build Windows EXE
+name: Build EXE
 
 on:
   push:
     branches: [ "master", "main" ]
 
 jobs:
-  build:
+  build-extension:
     runs-on: windows-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 16 # 稍微提升版本以匹配构建环境
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 16
 
-      - name: Install Project Dependencies
-        run: npm install --legacy-peer-deps
+    - name: Install Dependencies
+      run: npm install
 
-      - name: Build Web Project
-        run: npm run build
+    - name: Build EXE
+      run: npm run electron:build
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Force Install Electron Tools
-        # 手动安装缺失的打包工具，这样下面的 Action 就能找到命令了
-        run: npm install electron electron-builder --save-dev
-
-      - name: Build EXE (Electron Builder)
-        uses: samuelmeuli/action-electron-builder@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          # 增加参数，告诉它不要去检查 package.json 里的脚本，直接强制打包 dist 文件夹
-          args: "--config.directories.output=release --config.asar=true"
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: LuckyDraw-Windows
+        path: dist_electron/*.exe
