@@ -2,6 +2,8 @@
   "name": "lucky-draw",
   "version": "0.1.0",
   "private": true,
+  "description": "年会抽奖应用",
+  "author": "Your Name",
   "main": "background.js",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -44,8 +46,7 @@
     "win": {
       "target": [
         "nsis"
-      ],
-      "icon": "public/favicon.ico"
+      ]
     },
     "files": [
       "dist/**/*",
